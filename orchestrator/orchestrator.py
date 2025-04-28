@@ -1,15 +1,14 @@
-#!/usr/bin/env python3
 
-import subprocess            # Для запуска внешних команд
-import shutil                # Для копирования файлов
-import os                    # Для взаимодействия с ОС (сигналы, пути)
-import time                  # Для задержек между запусками процессов
-import signal                # Для отправки сигналов процессам
-from pathlib import Path     # Для работы с файловыми путями
-from datetime import datetime  # Для создания директорий с отметкой времени
+import subprocess            
+import shutil               
+import os                    
+import time                  
+import signal                
+from pathlib import Path    
+from datetime import datetime
 
-import pandas as pd          # Для чтения CSV и работы с DataFrame
-import matplotlib.pyplot as plt  # Для построения графиков
+import pandas as pd         
+import matplotlib.pyplot as plt  
 
 # Корневая директория проекта
 PROJECT_ROOT = Path(__file__).parent.parent
@@ -61,11 +60,6 @@ SENDER_RECEIVER_PAIRS = [
 ]
 
 def run_boost(method_name, method_config, output_root):
-    """
-    Запуск теста для Boost.Interprocess:
-    - Запускает отправителя и затем получателя
-    - Ожидает завершения, копирует метрики
-    """
     code_dir = PROJECT_ROOT / method_name
     output_subdir = output_root / f"{method_name}_run"
     output_subdir.mkdir()
@@ -92,11 +86,7 @@ def run_boost(method_name, method_config, output_root):
 
 
 def run_method(method_name, method_config, output_root):
-    """
-    Запуск тестов для заданного метода IPC:
-    - Проводит тесты по всем комбинациям отправитель-получатель
-    - Порядок запуска (отправитель/получатель) зависит от метода
-    """
+
     code_dir = PROJECT_ROOT / method_name
 
     if method_name == "posix_shared_memory":
@@ -157,15 +147,6 @@ def run_all_tests():
 
 
 def plot_results(results_dir):
-    """
-    Считывает CSV-файлы метрик из подкаталогов в results_dir, собирает данные и строит:
-      - Два отдельных графика пропускной способности (sender и receiver)
-      - Общий график использования памяти по ролям
-      - Индивидуальные графики использования памяти для каждого метода (кроме Boost)
-      - Индивидуальные графики пропускной способности для каждого метода (кроме Boost)
-    Метки оси X (run_tag) автоматически сокращаются до формата:
-      <префикс>_<отправитель>-><получатель>, например "shm_c++->c++"
-    """
     def short_label(run_tag: str) -> str:
         # Карты для префиксов методов
         prefix_map = {
@@ -271,8 +252,6 @@ def plot_results(results_dir):
             parse_metrics(sender_file, 'sender')
         if receiver_file:
             parse_metrics(receiver_file, 'receiver')
-
-    # === ГРАФИКИ ПРОПУСКНОЙ СПОСОБНОСТИ ===
     if throughput_records:
         df_tp = pd.DataFrame(throughput_records, columns=('run', 'role', 'mbps'))
 
@@ -304,7 +283,6 @@ def plot_results(results_dir):
             plt.close()
             print("[INFO] Сохранён throughput_receiver.png")
 
-    # === ОБЩИЙ ГРАФИК ИСПОЛЬЗОВАНИЯ ПАМЯТИ ПО РОЛЯМ ===
     if memory_records:
         df_mem = pd.DataFrame(memory_records, columns=('run', 'role', 'mb'))
         plt.figure(figsize=(12, 6))
@@ -326,7 +304,6 @@ def plot_results(results_dir):
         plt.close()
         print("[INFO] Сохранён memory_usage_comparison.png")
 
-    # === ПАМЯТЬ ПО МЕТОДАМ (КРОМЕ BOOST) ===
     for method_name, mem_list in memory_by_method.items():
         if method_name == 'boost_int':
             continue
@@ -342,7 +319,6 @@ def plot_results(results_dir):
         plt.close()
         print(f"[INFO] Сохранён {method_name}_memory.png")
 
-    # === ПРОПУСКНАЯ СПОСОБНОСТЬ ПО МЕТОДАМ (КРОМЕ BOOST) ===
     for method_name, sp_list in speeds_by_method.items():
         if method_name == 'boost_int':
             continue
@@ -359,11 +335,7 @@ def plot_results(results_dir):
         print(f"[INFO] Сохранён {method_name}_throughput.png")
 
 def main():
-    """
-    Основная функция:
-    - Запускает все тесты
-    - Вызывает построение графиков
-    """
+
     current_run_dir = run_all_tests()
     plot_results(current_run_dir)
 
