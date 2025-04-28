@@ -88,12 +88,10 @@ int main() {
             perror("recv");
             break;
         }
-        // Специальная метка завершения
         if (bytes == 4 && std::memcmp(buffer.data(), "DONE", 4) == 0) {
             break;
         }
         if (bytes == 0) {
-            // Клиент закрыл соединение
             break;
         }
         total_received += bytes;
