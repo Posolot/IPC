@@ -1,4 +1,4 @@
-// receiver.cpp
+
 #include <fcntl.h>
 #include <semaphore.h>
 #include <sys/mman.h>
@@ -11,7 +11,7 @@
 #include <cstring>
 
 const size_t TOTAL_SIZE = 10ULL * 1024 * 1024 * 1024;  // 10 GB
-const size_t CHUNK_SIZE = 16 * 1024 * 1024;
+const size_t CHUNK_SIZE = 16 * 1024 * 1024; // 16 MB
 const char* SHM_NAME = "/my_shm";
 const char* SEM_EMPTY_NAME = "/sem_empty";
 const char* SEM_FULL_NAME = "/sem_full";
